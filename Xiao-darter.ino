@@ -82,6 +82,7 @@ void loop()
     pixels.setPixelColor(incoming+1, pixels.Color(0, 128, 0));
     incoming++;
     _data[i].setposition(10);
+    // if _data[i].getposition() > NUM_LEDS then can be removed from list
  
   }
   
