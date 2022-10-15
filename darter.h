@@ -1,30 +1,17 @@
 
 
-class darter
+class Darter
 {
   private:
-   int pos;
    
   public:   
-    darter(int r, int g, int b)
+    int pos;
+    int r,g,b;
+    Darter(int posit,int red, int green, int blue)
     {
-      pos = 0;
+      pos = posit;
+      r = red;
+      g = green;
+      b = blue;
     }
-    
-    int update()
-    {
-      pos++;
-      return pos;
-    }
-
-    int getposition()
-    {
-      return pos;
-    }
-
-    void setposition(int newValue)
-    {
-      pos = newValue;
-    }
-  
 };
