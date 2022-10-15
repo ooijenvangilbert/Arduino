@@ -22,7 +22,13 @@ short sampleBuffer[512];
 // Number of audio samples read
 volatile int samplesRead;
 
-List<darter> _data;
+// threshold for audio
+int threshold = 300;
+
+// increment of the led steps
+int increment = 3;
+
+List<Darter> _data;
 
 void setup() 
 {
@@ -58,40 +64,41 @@ void loop()
   {
     for (int i = 0; i < samplesRead; i++) 
     {     
-        if (abs(sampleBuffer[i]) >300)
+        if (abs(sampleBuffer[i]) >threshold)
         {
-          Serial.println("adding");
-         
-          darter dart(0,0,0);
+          int randNumberR = random(0, 128);  //RED random number variable
+          int randNumberG = random(0, 128);  //GREEN random number variable
+          int randNumberB = random(0, 128);  //BLUE random number variable
+          Darter dart(1,randNumberR,randNumberG,randNumberB);
           _data.add(dart);
           i = samplesRead; // escape adding stuff.
+          memset(sampleBuffer, 0, sizeof(sampleBuffer)); // clearing the buffer, doesn't do much
         }
     }
 
+    // Clear the read count
     samplesRead = 0;
   }
 
   for(int i = 0; i < _data.getSize(); i++)
   {
-    Serial.print(i);
-    Serial.print("  ");
-    int incoming = _data[i].getposition();
-    Serial.print(incoming);
-    Serial.println("updating");
-    pixels.setPixelColor(incoming, pixels.Color(0, 0, 0));
-    pixels.setPixelColor(incoming+1, pixels.Color(0, 128, 0));
-    incoming++;
-    _data[i].setposition(10);
-    // if _data[i].getposition() > NUM_LEDS then can be removed from list
- 
+    Darter dart = _data[i];
+    int incoming = dart.pos;
+
+    pixels.setPixelColor(dart.pos, pixels.Color(0, 0, 0));
+    pixels.setPixelColor(dart.pos + increment, pixels.Color(dart.r,dart.g, dart.b));
+    incoming = incoming + increment;
+    _data.removeFirst(); // remove this instance from the list
+    
+    if (incoming < NUM_LEDS)
+    {
+      // not the end of the strip, add to the list again.
+      Darter dar (incoming,dart.r,dart.g,dart.b);
+      _data.add(dar); 
+    }
   }
-  
+
   pixels.show();
-  
-  if (_data.getSize()>10)
-  {
-    _data.removeFirst();
-  }
 }
 
 /**
