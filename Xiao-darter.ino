@@ -26,10 +26,10 @@ volatile int samplesRead;
 int threshold = 300;
 
 // increment of the led steps
-int increment = 1;
+int increment = 2;
 
-List<Darter> _data(true);
-List<Darter> internal(true);
+List<Darter> _data;
+List<Darter> internal;
 
 void setup() 
 {
@@ -61,13 +61,23 @@ void setup()
   
 void loop() 
 {
+  internal.clear();
+  
+  // transfer list to internal list *yuck*
+  for (int i = 0; i < _data.getSize(); i++)
+  {
+    Darter drt = _data[i];
+    Darter dar (drt.pos,drt.r,drt.g,drt.b);
+    internal.add(dar);
+  } 
+  _data.clear();
+  
   if (samplesRead)
   {
     for (int i = 0; i < samplesRead; i++) 
     {     
       if (abs(sampleBuffer[i]) >threshold)
       {
-        Serial.println("Adding");
         int randNumberR = random(0, 128);  //RED random number variable
         int randNumberG = random(0, 128);  //GREEN random number variable
         int randNumberB = random(0, 128);  //BLUE random number variable
@@ -81,15 +91,6 @@ void loop()
     samplesRead = 0;
   }
   
-  // transfer list to internal list *yuck*
-  for (int i = 0; i < _data.getSize(); i++)
-  {
-    Darter drt = _data[i];
-    Darter dar (drt.pos,drt.r,drt.g,drt.b);
-    internal.add(dar);
-  } 
-  _data.clear();
-
   for(int i = 0; i < internal.getSize(); i++)
   {
     Darter dart = internal[i];
@@ -108,7 +109,6 @@ void loop()
   }
 
   pixels.show();
-  internal.clear();
 }
 
 /**
